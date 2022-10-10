@@ -1,164 +1,23 @@
 <template>
   <div>
-    <header class="header">
-      <div class="header__logo">
-        <a href="index.html" class="logo">
-          <img :src="logo" alt="V!U!E! Pizza logo" width="90" height="40" />
-        </a>
-      </div>
-      <div class="header__cart">
-        <a href="cart.html">0 ₽</a>
-      </div>
-      <div class="header__user">
-        <a href="#" class="header__login"><span>Войти</span></a>
-      </div>
-    </header>
-
     <main class="content">
       <form action="#" method="post">
         <div class="content__wrapper">
           <h1 class="title title--big">Конструктор пиццы</h1>
-
-          <div class="content__dough">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">Выберите тесто</h2>
-
-              <div
-                class="sheet__content dough"
-                v-for="dough in pizzas.dough"
-                :key="dough.id"
-              >
-                <label :class="`dough__input dough__input--${dough.value}`">
-                  <input
-                    type="radio"
-                    name="dought"
-                    :value="dough.value"
-                    class="visually-hidden"
-                    :checked="dough.value === 'light'"
-                  />
-                  <b>{{ dough.name }}</b>
-                  <span> {{ dough.description }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="content__diameter">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">Выберите размер</h2>
-
-              <div
-                v-for="size in pizzas.sizes"
-                :key="size.id"
-                class="sheet__content diameter"
-              >
-                <label
-                  :class="`diameter__input diameter__input--${size.value}`"
-                >
-                  <input
-                    type="radio"
-                    name="diameter"
-                    :value="size.value"
-                    class="visually-hidden"
-                    :checked="size.value === 'normal'"
-                  />
-                  <span>{{ size.name }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="content__ingredients">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">
-                Выберите ингредиенты
-              </h2>
-
-              <div class="sheet__content ingredients">
-                <div class="ingredients__sauce">
-                  <p>Основной соус:</p>
-
-                  <label
-                    v-for="sauce in pizzas.sauces"
-                    :key="sauce.id"
-                    class="radio ingredients__input"
-                  >
-                    <input
-                      type="radio"
-                      name="sauce"
-                      :value="sauce.value"
-                      :checked="sauce.value === 'tomato'"
-                    />
-                    <span>{{ sauce.name }}</span>
-                  </label>
-                </div>
-
-                <div class="ingredients__filling">
-                  <p>Начинка:</p>
-
-                  <ul
-                    v-for="ingredient in pizzas.ingredients"
-                    :key="ingredient.id"
-                    class="ingredients__list"
-                  >
-                    <li class="ingredients__item">
-                      <span :class="`filling filling--${ingredient.value}`">{{
-                        ingredient.name
-                      }}</span>
-
-                      <div class="counter counter--orange ingredients__counter">
-                        <button
-                          type="button"
-                          class="counter__button counter__button--minus"
-                          disabled
-                        >
-                          <span class="visually-hidden">Меньше</span>
-                        </button>
-                        <input
-                          type="text"
-                          name="counter"
-                          class="counter__input"
-                          value="0"
-                        />
-                        <button
-                          type="button"
-                          class="counter__button counter__button--plus"
-                        >
-                          <span class="visually-hidden">Больше</span>
-                        </button>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="content__pizza">
-            <label class="input">
-              <span class="visually-hidden">Название пиццы</span>
-              <input
-                type="text"
-                name="pizza_name"
-                placeholder="Введите название пиццы"
-              />
-            </label>
-
-            <div class="content__constructor">
-              <div class="pizza pizza--foundation--big-tomato">
-                <div class="pizza__wrapper">
-                  <div class="pizza__filling pizza__filling--ananas"></div>
-                  <div class="pizza__filling pizza__filling--bacon"></div>
-                  <div class="pizza__filling pizza__filling--cheddar"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="content__result">
-              <p>Итого: 0 ₽</p>
-              <button type="button" class="button" disabled>Готовьте!</button>
-            </div>
-          </div>
+          <DoughSelector
+            :dough="dough"
+            @updatePizza="updatePizzaDough"
+            @changeDough="changeDough"
+          />
+          <SizeSelector :size="size" @changeSize="changeSize" />
+          <h1>{{ pizzaDough }}</h1>
+          <IngredientsSelector
+            :ingredient="ingredient"
+            :sauce="sauce"
+            @addIngredient="addIngredient"
+            @changeSauce="changeSauce"
+          />
+          <PizzaView />
         </div>
       </form>
     </main>
@@ -166,15 +25,61 @@
 </template>
 <script>
 import pizza from "@/static/pizza.json";
-import logo from "@/assets/img/logo.svg";
+import DoughSelector from "@/modules/builder/DoughSelector.vue";
+import IngredientsSelector from "@/modules/builder/IngredientsSelector.vue";
+import SizeSelector from "@/modules/builder/SizeSelector.vue";
+import PizzaView from "@/modules/builder/PizzaView.vue";
+
+import {
+  extendValue,
+  doughTypes,
+  sizeTypes,
+  sauceTypes,
+  ingredientTypes,
+} from "@/common/helper.js";
 
 export default {
   name: "IndexPage",
   data() {
     return {
+      pizzaDough: "",
       pizzas: pizza,
-      logo: logo,
+      dough: pizza.dough.map((item) => extendValue(item, doughTypes)),
+      size: pizza.sizes.map((item) => extendValue(item, sizeTypes)),
+      sauce: pizza.sauces.map((item) => extendValue(item, sauceTypes)),
+      ingredient: pizza.ingredients.map((item) =>
+        extendValue(item, ingredientTypes)
+      ),
     };
+  },
+  components: {
+    DoughSelector,
+    IngredientsSelector,
+    SizeSelector,
+    PizzaView,
+  },
+  methods: {
+    updatePizzaDough(someData) {
+      this.pizzaDough = someData.pizzaDough;
+    },
+    changeDough(index) {
+      for (let i = 0; i < this.dough.length; i++) {
+        this.dough[i].checked = i === index;
+      }
+    },
+    changeSize(index) {
+      for (let i = 0; i < this.size.length; i++) {
+        this.size[i].checked = i === index;
+      }
+    },
+    changeSauce(index) {
+      for (let i = 0; i < this.sauce.length; i++) {
+        this.sauce[i].checked = i === index;
+      }
+    },
+    addIngredient(index, value) {
+      this.ingredient[index].count = this.ingredients[index].count + value;
+    },
   },
 };
 </script>
