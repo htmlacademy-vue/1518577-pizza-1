@@ -1,5 +1,6 @@
 <template lang="">
   <li class="ingredients__item">
+    <!-- Я вообще не понимаю, что надо сделать -->
     <AppDrag
       :transferData="{}"
       :active="ingredient.count < MAX_INGREDIENT_COUNT"
