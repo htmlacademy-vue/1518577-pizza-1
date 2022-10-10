@@ -11,9 +11,9 @@
           :name="doughItem.name"
           :description="doughItem.description"
           :itemClass="`dough__input dough__input--${doughItem.value}`"
-          :itemChecked="'light'"
           :itemName="'dought'"
           @change="changeDough(index)"
+          @click="changePizzaDough"
         />
       </div>
     </div>
@@ -24,6 +24,11 @@ import SelectorItem from "@/common/components/SelectorItem.vue";
 
 export default {
   name: "DoughSelector",
+  data() {
+    return {
+      pizzaDough: "dough text",
+    };
+  },
   props: {
     dough: {
       type: Array,
@@ -36,6 +41,11 @@ export default {
     SelectorItem,
   },
   methods: {
+    changePizzaDough() {
+      this.$emit("updatePizza", {
+        pizzaDough: this.pizzaDough,
+      });
+    },
     changeDough(index) {
       this.$emit("changeDough", index);
     },

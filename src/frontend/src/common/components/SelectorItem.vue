@@ -5,7 +5,7 @@
       :name="itemName"
       :value="value"
       class="visually-hidden"
-      :checked="value === itemChecked"
+      :checked="value"
     />
     <b>{{ name }}</b>
     <span> {{ description }}</span>

@@ -19,15 +19,17 @@
           <p>Начинка:</p>
 
           <ul class="ingredients__list">
-            <AppDrag :transferData="ingredient">
-              <ItemCounter
-                v-for="(ingredientItem, index) in ingredient"
-                :key="ingredientItem.id"
-                :name="ingredientItem.name"
-                :value="ingredientItem.value"
-                @click="addIngredient(index, -1)"
-              />
-            </AppDrag>
+            <ItemCounter
+              v-for="(ingredientItem, index) in ingredient"
+              @input="$emit('input', pizzaIngredients)"
+              :key="ingredientItem.id"
+              :name="ingredientItem.name"
+              :classValue="ingredientItem.value"
+              :min="0"
+              :max="MAX_INGREDIENT_COUNT"
+              :ingredient="ingredient"
+              @click="addIngredient(index, -1)"
+            />
           </ul>
         </div>
       </div>
@@ -37,7 +39,8 @@
 <script>
 import RadioButton from "@/common/components/RadioButton.vue";
 import ItemCounter from "@/common/components/ItemCounter.vue";
-import AppDrag from "@/common/components/AppDrag.vue";
+// import AppDrag from "@/common/components/AppDrag.vue";
+import { MAX_INGREDIENT_COUNT } from "@/common/constants";
 
 export default {
   name: "IngredientsSelector",
@@ -51,10 +54,12 @@ export default {
       required: true,
     },
   },
+  data() {
+    return { MAX_INGREDIENT_COUNT };
+  },
   components: {
     RadioButton,
     ItemCounter,
-    AppDrag,
   },
   methods: {
     changeSauce(index) {

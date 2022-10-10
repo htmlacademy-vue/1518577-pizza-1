@@ -4,17 +4,19 @@
       <form action="#" method="post">
         <div class="content__wrapper">
           <h1 class="title title--big">Конструктор пиццы</h1>
-          <DoughSelector :dough="dough" @changeDough="changeDough" />
-
+          <DoughSelector
+            :dough="dough"
+            @updatePizza="updatePizzaDough"
+            @changeDough="changeDough"
+          />
           <SizeSelector :size="size" @changeSize="changeSize" />
-
+          <h1>{{ pizzaDough }}</h1>
           <IngredientsSelector
             :ingredient="ingredient"
             :sauce="sauce"
             @addIngredient="addIngredient"
             @changeSauce="changeSauce"
           />
-
           <PizzaView />
         </div>
       </form>
@@ -40,11 +42,12 @@ export default {
   name: "IndexPage",
   data() {
     return {
+      pizzaDough: "",
       pizzas: pizza,
       dough: pizza.dough.map((item) => extendValue(item, doughTypes)),
       size: pizza.sizes.map((item) => extendValue(item, sizeTypes)),
       sauce: pizza.sauces.map((item) => extendValue(item, sauceTypes)),
-      ingredient: pizza.sauces.map((item) =>
+      ingredient: pizza.ingredients.map((item) =>
         extendValue(item, ingredientTypes)
       ),
     };
@@ -56,6 +59,9 @@ export default {
     PizzaView,
   },
   methods: {
+    updatePizzaDough(someData) {
+      this.pizzaDough = someData.pizzaDough;
+    },
     changeDough(index) {
       for (let i = 0; i < this.dough.length; i++) {
         this.dough[i].checked = i === index;

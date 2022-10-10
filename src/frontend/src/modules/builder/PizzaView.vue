@@ -8,7 +8,7 @@
         placeholder="Введите название пиццы"
       />
     </label>
-    <AppDrop>
+    <AppDrop @drop="$emit('addIngredient', $event)">
       <div class="content__constructor">
         <div class="pizza pizza--foundation--big-tomato">
           <div class="pizza__wrapper">
